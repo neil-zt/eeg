@@ -14,9 +14,9 @@ if __name__ == '__main__':
     frame = Frame(
         channels=["Fp1", "Fp2", "F3", "F4", "F7", "F8", "C3", "C4", "P3", "P4", "O1", "O2", "T7", "T8"],
         sample_rate=125,
-        max_cache_samples=625,
+        max_cache_samples=125,
         window_size_samples=125,
-    )
+        output_directory="./server/results",)
     frame.wrap(pipeline=[  ])
 
     stream = Stream(serial_port='/dev/tty.usbserial-2110', baud_rate=9600)

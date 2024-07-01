@@ -1,4 +1,6 @@
 from collections import deque
+from datetime import datetime
+import multiprocessing, os, json
 
 class Frame:
     """
@@ -15,6 +17,7 @@ class Frame:
             sample_rate: int, 
             max_cache_samples: int,
             window_size_samples: int,
+            output_directory: str,
             ) -> None:
         
         self.channels = channels                            # List of channel names
@@ -23,9 +26,12 @@ class Frame:
                 channel: deque(maxlen=max_cache_samples) 
             for channel in channels}
         self.clock = 0                                      # Incremented for every new signal
-        self.packaged = []                                  # List of packaged signals (produces of wrap)
         self.pipeline = []                                  # List of functions to process signals
         self.window_size_samples = window_size_samples      # Number of samples per window
+        self.timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        self.output_directory = output_directory             # Directory to store results
+        self.output_destination = os.path.join(self.output_directory, self.timestamp)
+        os.makedirs(self.output_destination, exist_ok=True)
 
     def add_singal(self, signals: str) -> None:
         """
@@ -50,10 +56,36 @@ class Frame:
         """
         self.pipeline = pipeline
 
+    def _process_wrap_pipeline(self, channel_lists) -> None:
+        results = {}
+        results["raw"] = {channel: list(data) for channel, data in zip(self.channels, channel_lists)}
+        for processor in self.pipeline:
+            processor(self.channel_data)
+        
+        self.write_packaged_data(results)
+
     def do_wrap(self) -> None:
         """
         Perform the processing of the signal values, as defined by Frame.wrap(pipeline).
+        This function will now spawn a new process and run the pipeline in that process,
+        allowing parallel computation.
         """
-        for processor in self.pipeline:
-            processor(self.channel_data)
+        channel_lists = [list(self.channel_data[channel])[-self.window_size_samples:] 
+                         for channel in self.channels]
+
+        # Create a new process targeting the process_pipeline method
+        process = multiprocessing.Process(
+            target=self._process_wrap_pipeline,
+            args=(channel_lists,))
+        process.start()     # Start the process
+        # process.join()    # Shouldn't need this for now
+
+    def write_packaged_data(self, data: dict):
+        """
+        After each wrap, write the processed data to a file in json format where 
+        both the analyzed and raw data are packaged. 
+        """
+        with open(os.path.join(self.output_destination, f"{self.clock}.json"), "w") as file:
+            file.write(json.dumps(data))
+
 
