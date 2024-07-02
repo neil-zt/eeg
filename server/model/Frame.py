@@ -1,6 +1,7 @@
 from collections import deque
 from datetime import datetime
 import multiprocessing, os, json
+from model.MNEDriver import MNEDriver
 
 class Frame:
     """
@@ -18,6 +19,7 @@ class Frame:
             max_cache_samples: int,
             window_size_samples: int,
             output_directory: str,
+            montage: str = "standard_1020",
             ) -> None:
         
         self.sample_rate = sample_rate                      # Number of samples per second
@@ -38,11 +40,11 @@ class Frame:
         Add new signals to the frame. If max_cache_seconds is reached, the oldest signals
         are removed. The signals shall be comma-separated values from different channels.
         """
-        for i, signal in enumerate(signals.split(",")):
-            if i >= len(self.channels):
-                break
-            if signal == "":
-                continue
+        signals =signals.strip(",")
+        signals_list = signals.split(",")
+        if len(signals_list) != len(self.channels):
+            raise ValueError("The number of signals must match the number of channels.")
+        for i, signal in enumerate(signals_list):
             self.channel_data[self.channels[i]].append(signal)
 
         if (self.clock + 1) % self.window_size_samples == 0:
@@ -57,13 +59,17 @@ class Frame:
         self.pipeline = pipeline
 
     def _process_wrap_pipeline(self, channel_lists) -> None:
-        results = {}
-        results["raw"] = {channel: list(data) for channel, data in zip(self.channels, channel_lists)}
+        mne_driver = MNEDriver(
+            sample_rate=self.sample_rate,
+            channels=self.channels,
+            channel_data_lists=channel_lists,
+            output_destination=self.output_destination,
+            signal_serial=self.clock,
+            montage="standard_1020",
+        )
         for processor in self.pipeline:
-            processor(self.channel_data)
+            processor(mne_driver)
         
-        self.write_packaged_data(results)
-
     def do_wrap(self) -> None:
         """
         Perform the processing of the signal values, as defined by Frame.wrap(pipeline).
@@ -79,13 +85,5 @@ class Frame:
             args=(channel_lists,))
         process.start()     # Start the process
         # process.join()    # Shouldn't need this for now
-
-    def write_packaged_data(self, data: dict):
-        """
-        After each wrap, write the processed data to a file in json format where 
-        both the analyzed and raw data are packaged. 
-        """
-        with open(os.path.join(self.output_destination, f"{self.clock}.json"), "w") as file:
-            file.write(json.dumps(data))
 
 

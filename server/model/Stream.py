@@ -13,7 +13,7 @@ class Stream:
         try:
             self.serial = serial.Serial(self.serial_port, self.baud_rate)
         except Exception:
-            print(f"Failed to connect to serial port {self.serial_port}. See README for trouble-shooting Exiting...")
+            raise ValueError(f"Failed to connect to serial port {self.serial_port}. See README for trouble-shooting Exiting...")
 
     def start(self):
         """
