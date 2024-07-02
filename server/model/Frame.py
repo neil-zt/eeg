@@ -20,8 +20,8 @@ class Frame:
             output_directory: str,
             ) -> None:
         
-        self.channels = channels                            # List of channel names
         self.sample_rate = sample_rate                      # Number of samples per second
+        self.channels = channels                            # List of channel names
         self.channel_data = {                               # Dictionary of channels and their data
                 channel: deque(maxlen=max_cache_samples) 
             for channel in channels}

@@ -16,4 +16,13 @@ void loop() {
 
         String message = "||" + String(seriesStamp) + "|";
         float randomSignal = random(-1000, 1001) / 1000.0; 
-       
+        for (int j = 0; j < NUM_CHANNELS; j++) {
+            message += String(randomSignal) + ",";
+        }
+
+        Serial.println(message); 
+        delay(8); 
+        seriesStamp++;
+        if (seriesStamp >= 100) seriesStamp = 0;
+    }
+} 
