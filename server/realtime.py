@@ -1,8 +1,7 @@
-import uvicorn
-from fastapi import FastAPI
 from model.Frame import Frame
 from model.Stream import Stream
 from model.MNEDriver import MNEDriver
+from model.Server import Server
 
 
 if __name__ == '__main__':
@@ -31,4 +30,9 @@ if __name__ == '__main__':
         print, 
         frame.add_singal,])
     stream.start()
+
+    # Running the FastAPI server
+    server = Server(host="0.0.0.0", port=8000)
+    server.run()
+
 
