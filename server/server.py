@@ -3,11 +3,6 @@ from fastapi import FastAPI
 from model.Frame import Frame
 from model.Stream import Stream
 from model.MNEDriver import MNEDriver
-    
-app = FastAPI()
-@app.get("/data")
-def get_latest_signal():
-    return {"latest_signal": ""}
 
 
 if __name__ == '__main__':
@@ -37,5 +32,3 @@ if __name__ == '__main__':
         frame.add_singal,])
     stream.start()
 
-    # Running the FastAPI server
-    uvicorn.run(app, host="0.0.0.0", port=8080)
