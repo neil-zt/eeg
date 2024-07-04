@@ -68,7 +68,10 @@ class Frame:
             montage="standard_1020",
         )
         for processor in self.pipeline:
-            processor(mne_driver)
+            if type(processor) is tuple:
+                processor[0](mne_driver, **processor[1])
+            else:
+                processor(mne_driver)
         
     def do_wrap(self) -> None:
         """

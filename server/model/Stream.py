@@ -50,7 +50,10 @@ class Stream:
                     # We have obtained the clean signal. Now we process
                     # the signal by running the pipeline provided. 
                     for processor in self.pipeline:
-                        processor(signals)
+                        if type(processor) is tuple:
+                            processor[0](signals, **processor[1])
+                        else:
+                            processor(signals)
 
     def onload(self, pipeline: list[callable]) -> None:
         self.pipeline = pipeline

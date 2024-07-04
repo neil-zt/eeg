@@ -1,7 +1,3 @@
-/*
-* In this sketch we assume all channels have the same value. 
-*/
-
 int NUM_CHANNELS = 8;
 
 void setup() {
