@@ -33,15 +33,15 @@ You are good to go after installing the dependencies.
 
 Inspired by MVC paradigms commonly used in servers, in this Python system there are several classes, each called a model and representing a system block in the above diagram. Descriptions of each model (class) and its functionalities are as follows: 
 
-- Server Control: The `Server` Class
+- **Server Control**: The `Server` Class
     - Responds to external requests and keeps all processes running.
-- Stream Control: The `Stream` Class
+- **Stream Control**: The `Stream` Class
     - Receives signals from a serial port, be it USB or Bluetooth. 
     - Reads signals from a static file containing prerecorded signals. 
-- Data Frame Control: The `Frame` Class
+- **Data Frame Control**: The `Frame` Class
     - Turns realtime high-frequency data into packets of information. 
     - Caches and auto-removes the signals recorded. 
-- MNE Driver: The `MNEDriver` Class
+- **MNE Driver**: The `MNEDriver` Class
     - Helps the `Frame` Class invoke APIs of the MNE package. 
 
 
