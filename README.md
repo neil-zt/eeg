@@ -123,6 +123,21 @@ server = Server(host="0.0.0.0", port=8000)
 server.run()
 ```
 
+### Reading from Static Files 
+
+If you wish to read in a static file instead of streaming realtime data, the only item that has to be changed is how we define the `Stream` instance. Other details remain the same as in the case of straming from Arduino. 
+
+```python
+stream = Stream(
+    file_name="./server/sample_data/eeg-alpha-waves/subject_11.csv",
+    read_pause=0.00,
+    drop_last=2,
+    drop_first=1, )
+```
+
+Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. 
+
+
 ## Appendix
 
 ### Common Errors 
