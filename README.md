@@ -101,7 +101,20 @@ frame.wrap(pipeline=[
 ])
 ```
 
-Afterwards, we create a `Stream` object by passing in 
+Afterwards, we create a `Stream` object by passing in where we intend to read the stream from. Methods to get the serial port name have been documented in the [appendix](#other-guides). 
+
+```python
+stream = Stream(
+    serial_port='/dev/tty.usbserial-2110',
+    baud_rate=9600, )
+```
+
+Then, similar to how we defined the pipeline of processing before, we can define the pipeline of what to do to the signals read in. In our system, we want to add that new signal to the `frame`; as an example, we want to print that signal out. We first add the methods to the pipelines, and then start the stream. 
+
+```python
+stream.onload(pipeline=[ print, frame.add_singal ])
+stream.start()
+```
 
 
 ## Appendix
@@ -118,11 +131,5 @@ Afterwards, we create a `Stream` object by passing in
 - **Searching for Serial Port Name**
     You can view the port name in the Arduino IDE, or using the following methods:
     - **Windows**: Open the Device Manager, and look for the port name under `Ports (COM & LPT)`.
-    - **Linux**:
-        ```bash
-        ls /dev/tty*
-        ```
-    - **Mac**:
-        ```bash
-        ls /dev/tty.*
-        ```
+    - **Linux**: `ls /dev/tty*`
+    - **Mac**: `ls /dev/tty.*`
