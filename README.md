@@ -116,7 +116,7 @@ stream.onload(pipeline=[ print, frame.add_singal ])
 stream.start()
 ```
 
-Lastly, we start the server using the below code. Note that depending on the environment, <span style="text-decoration: underline">the code might terminate immediately after you start the program if you do not start the server</span>. This is because we are running the stream on another thread, and if we do not start the server, the main thread ends immediately, causing the alternate thread to also end. 
+Lastly, we start the server using the below code. *Note* that depending on the environment, the code might terminate immediately after you start the program if you do not start the server. This is because we are running the stream on another thread, and if we do not start the server, the main thread ends immediately, causing the alternate thread to also end. 
 
 ```python
 server = Server(host="0.0.0.0", port=8000)
