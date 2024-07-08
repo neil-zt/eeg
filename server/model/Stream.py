@@ -10,12 +10,16 @@ class Stream:
             file_name: str = None,
             read_pause: float = 0.001,
             drop_last: int = 0,
+            drop_first: int = 0,
+            drop_header_rows: int = 0,
             ) -> None:
         
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         self.read_pause = read_pause
         self.drop_last = drop_last
+        self.drop_first = drop_first
+        self.drop_header_rows = drop_header_rows
         
         if (file_name is not None and serial_port is not None) \
                 or (file_name is None and serial_port is None):
@@ -45,14 +49,18 @@ class Stream:
         """
         Read the file as if it were a stream, one signal at a time.
         """
+        i = 0
         for line in self.file:
-            signals = ",".join(line.split(",")[1:-self.drop_last])
+            if i < self.drop_header_rows:
+                continue
+            signals = ",".join(line.split(",")[self.drop_first:-self.drop_last])
             for processor in self.pipeline:
                 if type(processor) is tuple:
                     processor[0](signals, **processor[1])
                 else:
                     processor(signals)
             time.sleep(self.read_pause)
+            i += 1
         
     def stream(self):
         """

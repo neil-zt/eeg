@@ -27,11 +27,15 @@ pip install -r server/requirements.txt
 
 You are good to go after installing the dependencies. 
 
+## Systems Descriptions 
+
+![](/asset/systems.png)
+
 ## Data Formats 
 
 ### Streaming from Arduino
 
-The communication between Arduino and the Python server through the serial port must follow, at least under the current implementation, the format `||<serial>|<comma-separated-channel-values>`. For example, a snippet of the signal may look like:
+The communication between Arduino and the Python server through the serial port must follow, at least under the current implementation, the format `||<serial>|<comma-separated-channel-values>`. For example, a snippet of the serial message may look like:
 
 ```
 ||36|0.01,0.034,0.07,0.11, ...
@@ -40,7 +44,22 @@ The communication between Arduino and the Python server through the serial port 
 ||39|0.01,0.034,0.07,0.11, ...
 ```
 
-The `<serial>` number shall be an integer. It can be a repeating integer, meaning that, for example, it can go `1, 2, 3, ..., 98, 99, 100, 1, 2, 3, ...`. Such implementation allows the Python program to wait for any skips and smoothens any mismatches between reading and receiving frequencies. Examples of such code implementation have been provided in the `/board` directory. 
+The `<serial>` number shall be an integer. It can be a repeating integer, meaning that, for example, it can go `1, 2, 3, ..., 98, 99, 100, 1, 2, 3, ...`. Such implementation allows the Python program to wait for any skips and smoothens any mismatches between reading and receiving frequencies. Examples of Arduino code to produce this format have been provided in the `/board` directory. 
+
+
+### Reading from Static Files 
+
+This Python program reads in only `.csv` files. If you encounter other file types for EEG signals such as the European data format `.edf`, you can use the provided tools such as `server/tools/edf_to_csv.py`, as explained later. Either way, the `.csv` file must by in the following format, in which each channel exists in exactly one column. 
+
+```
+0.01,0.034,0.07,0.11, ...
+0.01,0.034,0.07,0.11, ...
+0.01,0.034,0.07,0.11, ...
+0.01,0.034,0.07,0.11, ...
+```
+
+If there are header rows, header columns, or tailing columns, you can drop them automatically, which will also be described later. 
+
 
 
 ## Drafts 

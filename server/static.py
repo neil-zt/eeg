@@ -27,6 +27,7 @@ if __name__ == '__main__':
         file_name="./server/sample_data/eeg-alpha-waves/subject_11.csv",
         read_pause=0.00,
         drop_last=2,
+        drop_first=1,
     )
     stream.onload(pipeline=[
         print, 
