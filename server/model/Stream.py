@@ -1,28 +1,59 @@
-import serial, threading
+import serial, threading, time
 
 
 class Stream:
 
     def __init__(
             self, 
-            serial_port: int, 
-            baud_rate: int,
+            serial_port: int = None, 
+            baud_rate: int = None,
+            file_name: str = None,
+            read_pause: float = 0.001,
+            drop_last: int = 0,
             ) -> None:
+        
         self.serial_port = serial_port
         self.baud_rate = baud_rate
-        try:
-            self.serial = serial.Serial(self.serial_port, self.baud_rate)
-        except Exception:
-            raise ValueError(f"Failed to connect to serial port {self.serial_port}. See README for trouble-shooting Exiting...")
+        self.read_pause = read_pause
+        self.drop_last = drop_last
+        
+        if (file_name is not None and serial_port is not None) \
+                or (file_name is None and serial_port is None):
+            raise ValueError("Exactly one of file_name or serial_port must be provided.")
+        else:
+            if serial_port is not None:
+                try:
+                    self.serial = serial.Serial(self.serial_port, self.baud_rate)
+                except Exception:
+                    raise ValueError(f"Failed to connect to serial port {self.serial_port}. See README for trouble-shooting Exiting...")
+            else:
+                self.file_name = file_name
+                self.file = open(self.file_name, "r")
 
     def start(self):
         """
         Start a new thread to read the serial port.
         """
-        thread = threading.Thread(target=self.stream)
-        thread.daemon = True
-        thread.start()
-
+        if self.serial_port is not None:
+            thread = threading.Thread(target=self.stream)
+            thread.daemon = True
+            thread.start()
+        else:
+            self.read()
+    
+    def read(self):
+        """
+        Read the file as if it were a stream, one signal at a time.
+        """
+        for line in self.file:
+            signals = ",".join(line.split(",")[1:-self.drop_last])
+            for processor in self.pipeline:
+                if type(processor) is tuple:
+                    processor[0](signals, **processor[1])
+                else:
+                    processor(signals)
+            time.sleep(self.read_pause)
+        
     def stream(self):
         """
         This function reads the serial port and processes the incoming data. The

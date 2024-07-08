@@ -68,7 +68,7 @@ class MNEDriver:
     
     @staticmethod
     def plot_data(mne_driver, *args, **kwargs):
-        data_fig = mne_driver.mne_raw.plot(*args, scalings="auto", **kwargs)
+        data_fig = mne_driver.mne_raw.plot(*args, **kwargs)
         if mne_driver.output_destination is not None:
             data_fig.savefig(mne_driver.get_path_name("data.png"))
         mne_driver.sequence += 1

@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ])
 
     stream = Stream(
-        serial_port='/dev/tty.usbserial-2110', 
+        serial_port='/dev/tty.usbserial-2110',
         baud_rate=9600,)
     stream.onload(pipeline=[
         print, 
