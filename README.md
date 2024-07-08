@@ -138,6 +138,18 @@ stream = Stream(
 Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. 
 
 
+### Tools 
+
+Additional tools have also been provided to facilitate the development process. These tools are written in Python and are located in the `/server/tools/` directory. Below are the instructions on how to use them. These instructions assume that we are already inside the tools directory with `cd server/tools`. Also note that depending on your Python configuration, the prefix command `python3` might by `python` or something else. 
+
+- **EDF to CSV** `edf_to_csv.py`
+    This tool converts the EDF `.edf` EEG signal file into a `.csv` file. 
+    ```sh
+    python3 edf_to_csv.py <source-file-path> <destination-file-path>
+    ```
+    `
+
+
 ## Appendix
 
 ### Common Errors 
