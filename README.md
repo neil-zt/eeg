@@ -101,13 +101,22 @@ frame.wrap(pipeline=[
 ])
 ```
 
+Afterwards, we create a `Stream` object by passing in 
 
-## Drafts 
 
-### Notices 
+## Appendix
 
-1. **Update the `SERIAL_PORT` variable in `server.py`** 
-    Depending on the serial port of the device, the variable has to be changed. You can view the port name in the Arduino IDE, or using the following methods:
+### Common Errors 
+
+- **Concurrent Serial Read**
+    The serial port can only be read by one process at a time. Make sure that:
+    - No two or more instances of the server are running.
+    - The **Serial Monitor** panel in the Arduino IDE is closed.
+
+### Other Guides 
+
+- **Searching for Serial Port Name**
+    You can view the port name in the Arduino IDE, or using the following methods:
     - **Windows**: Open the Device Manager, and look for the port name under `Ports (COM & LPT)`.
     - **Linux**:
         ```bash
@@ -117,8 +126,3 @@ frame.wrap(pipeline=[
         ```bash
         ls /dev/tty.*
         ```
-
-2. **No Concurrent Read**
-    The serial port can only be read by one process at a time. Make sure that:
-    - No two or more instances of the server are running.
-    - The **Serial Monitor** panel in the Arduino IDE is closed.
