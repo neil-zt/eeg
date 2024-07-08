@@ -29,7 +29,21 @@ You are good to go after installing the dependencies.
 
 ## Systems Descriptions 
 
-![](/asset/systems.png)
+![EEG Software Systems Graph](/asset/systems.png)
+
+Inspired by MVC paradigms commonly used in servers, in this Python system there are several classes, each called a model and representing a system block in the above diagram. Descriptions of each model (class) and its functionalities are as follows: 
+
+- Server Control: The `Server` Class
+    - Responds to external requests and keeps all processes running.
+- Stream Control: The `Stream` Class
+    - Receives signals from a serial port, be it USB or Bluetooth. 
+    - Reads signals from a static file containing prerecorded signals. 
+- Data Frame Control: The `Frame` Class
+    - Turns realtime high-frequency data into packets of information. 
+    - Caches and auto-removes the signals recorded. 
+- MNE Driver: The `MNEDriver` Class
+    - Helps the `Frame` Class invoke APIs of the MNE package. 
+
 
 ## Data Formats 
 
@@ -60,6 +74,32 @@ This Python program reads in only `.csv` files. If you encounter other file type
 
 If there are header rows, header columns, or tailing columns, you can drop them automatically, which will also be described later. 
 
+## Usage 
+
+### Streaming from Arduino 
+
+The example script for straming from Arduino can be found in `/server/realtime.py`. Below is a walkthrough of the configurations used there. First, we create a `Frame` object that is supposed to hold signals from multiple channels. Particularly note that `window_size_samples` defines how many datapoints shall be packed into a single window and analyzed together.  
+
+```python
+frame = Frame(
+    channels=["Fp1", "Fp2", "F3", "F4", "F7", "F8", "C3", "C4"],
+    sample_rate=125,
+    max_cache_samples=125,
+    window_size_samples=60,
+    output_directory="./server/results", )
+```
+
+Then, we define how the `frame` processes the data. In this case, for every `125` signals received, the frame invokes the following processes: (1) Plot the data, (2) Plot the power spectral density, (3) Filter the data, (4) Plot the power spectral density, and (5) Filter the data. Notice that parameters can be passed in as a dictionary binded in the same tuple with the function, as in `(MNEDriver.filter, {"l_freq": 15, "h_freq": 45})`. 
+
+```python
+frame.wrap(pipeline=[ 
+    MNEDriver.plot_data,
+    MNEDriver.plot_psd,
+    (MNEDriver.filter, {"l_freq": 15, "h_freq": 45}),
+    MNEDriver.plot_data,
+    MNEDriver.plot_psd,
+])
+```
 
 
 ## Drafts 
