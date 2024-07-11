@@ -1,6 +1,6 @@
 import numpy as np
 import mne, os, json
-from mne.preprocessing import ICA
+# from mne.preprocessing import ICA
 
 class MNEDriver:
 
@@ -14,7 +14,7 @@ class MNEDriver:
             montage: str = "standard_1020",
             ) -> None:
         
-        self.channel_data_lists = np.array(channel_data_lists)
+        self.channel_data_lists = np.array(channel_data_lists).astype(float)
         self.sample_rate = sample_rate
         self.channels = channels
         self.output_destination = output_destination
@@ -37,6 +37,15 @@ class MNEDriver:
         self.mne_raw.set_montage(mne.channels.make_standard_montage(self.montage))
         self.sequence = 0
 
+    def re_init(self, channel_data_lists: list[list[float]]):
+        """
+        Reinitialize the MNEDriver with new channel data lists. The is useful for 
+        scenarios such as adding noise to the EEG data. 
+        """
+        self.channel_data_lists = np.array(channel_data_lists)
+        self.mne_raw = mne.io.RawArray(self.channel_data_lists, self.mne_info)
+        self.mne_raw.set_montage(mne.channels.make_standard_montage(self.montage))
+
     def get_path_name(self, file_name: str) -> str:
         dir_path = os.path.join(self.output_destination, f"{self.signal_serial}")
         if not os.path.exists(dir_path):
@@ -51,6 +60,13 @@ class MNEDriver:
     def write_json(self, file_name, data):
         with open(self.get_path_name(file_name), "w") as file:
             json.dump(data, file)
+
+    def get_average_signal(self) -> float:
+        """
+        Get the average value of each individual signal. Specifically, 
+        it returns the average of the 2d array of channel_data_lists.
+        """
+        return np.mean(self.channel_data_lists)
     
     @staticmethod
     def record_data(mne_driver, *args, **kwargs):
@@ -77,6 +93,12 @@ class MNEDriver:
     @staticmethod
     def filter(mne_driver, *args, **kwargs):
         mne_driver.mne_raw.filter(*args, **kwargs)
+        mne_driver.sequence += 1
+        return mne_driver
+    
+    @staticmethod
+    def notch_filter(mne_driver, *args, **kwargs):
+        mne_driver.mne_raw.notch_filter(*args, **kwargs)
         mne_driver.sequence += 1
         return mne_driver
     

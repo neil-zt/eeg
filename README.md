@@ -147,7 +147,7 @@ Additional tools have also been provided to facilitate the development process. 
     ```sh
     python3 edf_to_csv.py <source-file-path> <destination-file-path>
     ```
-    `
+    
 
 
 ## Appendix

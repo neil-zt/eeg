@@ -67,8 +67,13 @@ class Frame:
             signal_serial=self.clock,
             montage="standard_1020",
         )
+        # Set the default kwargs
+
         for processor in self.pipeline:
             if type(processor) is tuple:
+                if processor[1].get("cascade_output", False):
+                    processor[1]["output_destination"] = self.output_destination
+                    processor[1]["signal_serial"] = self.clock
                 processor[0](mne_driver, **processor[1])
             else:
                 processor(mne_driver)
