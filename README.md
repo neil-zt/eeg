@@ -25,7 +25,7 @@ The required depenencies used here are listed inside `/server/requirements.txt`.
 pip install -r server/requirements.txt
 ```
 
-You are good to go after installing the dependencies. 
+You are good to go after installing the dependencies. However, if during installation any error occurs, it is recommended that you install the dependencies one by one. In that case, you can run either one of `server/noise.py`, `server/realtime.py`, or `server/static.py` and see which dependencies are missing.
 
 ## Systems Descriptions 
 
@@ -43,6 +43,13 @@ Inspired by MVC paradigms commonly used in servers, in this Python system there 
     - Caches and auto-removes the signals recorded. 
 - **MNE Driver**: The `MNEDriver` Class
     - Helps the `Frame` Class invoke APIs of the MNE package. 
+
+Two additional models are provided to facilitate the development process:
+
+- **Noise Generator**: The `Noise` Class
+    - Generates random noise signals for testing purposes.
+- **Metrics**: The `Metrics` Class
+    - Calculates metrics to assess the performance of the system, such as a recording's correlation to the ground truth. 
 
 
 ## Data Formats 
@@ -78,7 +85,7 @@ If there are header rows, header columns, or tailing columns, you can drop them 
 
 ### Streaming from Arduino 
 
-The example script for straming from Arduino can be found in `/server/realtime.py`. Below is a walkthrough of the configurations used there. First, we create a `Frame` object that is supposed to hold signals from multiple channels. Particularly note that `window_size_samples` defines how many datapoints shall be packed into a single window and analyzed together.  
+The example script for streaming from Arduino can be found in `/server/realtime.py`. Below is a walkthrough of the configurations used there. First, we create a `Frame` object that is supposed to hold signals from multiple channels. Particularly note that `window_size_samples` defines how many datapoints shall be packed into a single window and analyzed together.  
 
 ```python
 frame = Frame(
@@ -136,6 +143,48 @@ stream = Stream(
 ```
 
 Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. 
+
+### Generating Noise and Using Metrics
+
+For testing purposes, you can generate noise signals using the `Noise` class, and evaluate your system using the ``Metrics`` class. The following code snippets are from the `server/noise.py` file. We have previously seen that you can use `Frame.wrap` to define a pipeline of processing. During the pipeline, you can add the noise signals to the frame. Simply add the method to the pipeline as below:
+
+```python
+frame.wrap(pipeline=[ 
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (MNEDriver.notch_filter, {"freqs": [60]}),
+        (MNEDriver.plot_data, {"scalings": 30}),
+])
+```
+
+In this example, we define that during each pipeline cycle, we first plot out the EEG signals, then add noise to the signals, and then plot out the signals again. Later, we apply a notch filter to try filtering out the noise we just added, and plot the signals again. During this process, you may want to record the signals at specific stages of the pipeline. To do so, you can use the `Metrics.take_snapshot` method, adding it to the pipeline:
+
+```python
+recorder = Metrics()
+frame.wrap(pipeline=[ 
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (Metrics.take_snapshot, {"metrics": recorder, "name": "original"}),
+
+        (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (Metrics.take_snapshot, {"metrics": recorder, "name": "noisy"}),
+
+        (MNEDriver.notch_filter, {"freqs": [60]}),
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (Metrics.take_snapshot, {"metrics": recorder, "name": "filtered"}),
+
+
+        (Metrics.record_pearson_correlation, {"metrics": recorder, 
+                                              "snapshots": ["original", "noisy"],
+                                              "cascade_output": True}),
+        (Metrics.record_pearson_correlation, {"metrics": recorder, 
+                                              "snapshots": ["original", "filtered"],
+                                              "cascade_output": True}),
+])
+```
+
+When taking snapshots, you can specify the name of it. For example, the snapshot of the original data is named `original`, the snapshot of the noisy data is named `noisy`, and the snapshot of the filtered data is named `filtered`. After taking the snapshots, you can calculate the Pearson correlation between among the snapshots, as seem in the last two lines of the pipeline. The `cascade_output` parameter allows you to write out the correlation results as they are calculated.
 
 
 ### Tools 
