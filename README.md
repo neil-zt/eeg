@@ -230,7 +230,7 @@ OpenSignals devices output files in the `.txt` format. Use any text editor to op
 ...
 ```
 
-The header rows are prefixed with `#`, and the data rows are tab-separated. If you extend the JSON header (the second line in the above example), you may see something like the below JSON. Particularly note that the `column` key describes what each column in the data rows represent. For detailed specifications, visit OpenSignals' [official documentation](https://support.pluxbiosignals.com/knowledge-base/opensignals-sensor-file-specifications-txt-format/).
+The header rows are prefixed with `#`, and the data rows are tab-separated. If you extend the JSON header (the second line in the above example), you may see something like the below JSON. Particularly note that the `column` key describes what each column in the data rows represent. For details, visit OpenSignals' [official documentation](https://support.pluxbiosignals.com/knowledge-base/opensignals-sensor-file-specifications-txt-format/).
 
 ```json
 {
@@ -253,7 +253,6 @@ The header rows are prefixed with `#`, and the data rows are tab-separated. If y
       "DI",
       "CH3"
     ]
-    // ...
   }
 }
 ```
