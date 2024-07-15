@@ -208,10 +208,52 @@ Additional tools have also been provided to facilitate the development process. 
     - No two or more instances of the server are running.
     - The **Serial Monitor** panel in the Arduino IDE is closed.
 
-### Other Guides 
+### Searching for Serial Port Name
 
-- **Searching for Serial Port Name**
-    You can view the port name in the Arduino IDE, or using the following methods:
-    - **Windows**: Open the Device Manager, and look for the port name under `Ports (COM & LPT)`.
-    - **Linux**: `ls /dev/tty*`
-    - **Mac**: `ls /dev/tty.*`
+You can view the port name in the Arduino IDE, or using the following methods:
+- **Windows**: Open the Device Manager, and look for the port name under `Ports (COM & LPT)`.
+- **Linux**: `ls /dev/tty*`
+- **Mac**: `ls /dev/tty.*`
+
+### Reading OpenSignals Data 
+
+OpenSignals devices output files in the `.txt` format. Use any text editor to open the file, and observe something similar to this:
+
+```txt
+# OpenSignals Text File Format. Version 1
+# <--Some-JSON-->
+# EndOfHeader
+0   0   18  ...
+1   0   20  ...
+2   0   49  ...
+3   0   32  ...
+...
+```
+
+The header rows are prefixed with `#`, and the data rows are tab-separated. If you extend the JSON header (the second line in the above example), you may see something like the below JSON. Particularly note that the `column` key describes what each column in the data rows represent. For detailed specifications, visit OpenSignals' [official documentation](https://support.pluxbiosignals.com/knowledge-base/opensignals-sensor-file-specifications-txt-format/).
+
+```json
+{
+  "00:07:80:8C:08:EB": {
+    "sampling rate": 1000,
+    "resolution": [
+      16
+    ],
+    "channels": [
+      3
+    ],
+    "sensor": [
+      "EDA"
+    ],
+    "label": [
+      "CH3"
+    ],
+    "column": [
+      "nSeq",
+      "DI",
+      "CH3"
+    ]
+    // ...
+  }
+}
+```
