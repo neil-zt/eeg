@@ -142,7 +142,7 @@ stream = Stream(
     drop_first=1, )
 ```
 
-Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. 
+Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. To read from `.edf` or `.txt` files, convert them to `.csv` files using the tools provided in the `/server/tools/` directory, with documentations provided in the [Tools](#tools) section below.
 
 ### Generating Noise and Using Metrics
 
