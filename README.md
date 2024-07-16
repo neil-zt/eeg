@@ -150,11 +150,11 @@ For testing purposes, you can generate noise signals using the `Noise` class, an
 
 ```python
 frame.wrap(pipeline=[ 
-        (MNEDriver.plot_data, {"scalings": 30}),
-        (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
-        (MNEDriver.plot_data, {"scalings": 30}),
-        (MNEDriver.notch_filter, {"freqs": [60]}),
-        (MNEDriver.plot_data, {"scalings": 30}),
+    (MNEDriver.plot_data, {"scalings": 30}),
+    (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
+    (MNEDriver.plot_data, {"scalings": 30}),
+    (MNEDriver.notch_filter, {"freqs": [60]}),
+    (MNEDriver.plot_data, {"scalings": 30}),
 ])
 ```
 
@@ -163,24 +163,24 @@ In this example, we define that during each pipeline cycle, we first plot out th
 ```python
 recorder = Metrics()
 frame.wrap(pipeline=[ 
-        (MNEDriver.plot_data, {"scalings": 30}),
-        (Metrics.take_snapshot, {"metrics": recorder, "name": "original"}),
+    (MNEDriver.plot_data, {"scalings": 30}),
+    (Metrics.take_snapshot, {"metrics": recorder, "name": "original"}),
 
-        (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
-        (MNEDriver.plot_data, {"scalings": 30}),
-        (Metrics.take_snapshot, {"metrics": recorder, "name": "noisy"}),
+    (Noise.add_noise, {"scale": 0.001, "sin_frequency": 60}),
+    (MNEDriver.plot_data, {"scalings": 30}),
+    (Metrics.take_snapshot, {"metrics": recorder, "name": "noisy"}),
 
-        (MNEDriver.notch_filter, {"freqs": [60]}),
-        (MNEDriver.plot_data, {"scalings": 30}),
-        (Metrics.take_snapshot, {"metrics": recorder, "name": "filtered"}),
+    (MNEDriver.notch_filter, {"freqs": [60]}),
+    (MNEDriver.plot_data, {"scalings": 30}),
+    (Metrics.take_snapshot, {"metrics": recorder, "name": "filtered"}),
 
 
-        (Metrics.record_pearson_correlation, {"metrics": recorder, 
-                                              "snapshots": ["original", "noisy"],
-                                              "cascade_output": True}),
-        (Metrics.record_pearson_correlation, {"metrics": recorder, 
-                                              "snapshots": ["original", "filtered"],
-                                              "cascade_output": True}),
+    (Metrics.record_pearson_correlation, {"metrics": recorder, 
+                                            "snapshots": ["original", "noisy"],
+                                            "cascade_output": True}),
+    (Metrics.record_pearson_correlation, {"metrics": recorder, 
+                                            "snapshots": ["original", "filtered"],
+                                            "cascade_output": True}),
 ])
 ```
 
@@ -196,8 +196,13 @@ Additional tools have also been provided to facilitate the development process. 
     ```sh
     python3 edf_to_csv.py <source-file-path> <destination-file-path>
     ```
-    
 
+- **OpenSignals to CSV** `opensignals_to_csv.py`
+    This tool converts the OpenSignals `.txt` EEG signal file into a `.csv` file. 
+    ```sh
+    python3 opensignals_to_csv.py <source-file-path> <destination-file-path>
+    ```
+    
 
 ## Appendix
 
@@ -217,7 +222,7 @@ You can view the port name in the Arduino IDE, or using the following methods:
 
 ### Reading OpenSignals Data 
 
-OpenSignals devices output files in the `.txt` format. Use any text editor to open the file, and observe something similar to this:
+OpenSignals devices output files in the `.txt` format. You may want to convert it to a `.csv` file which this system can process using a tool provided in this repository, as outlined above in the [Tools](#tools) section. If you would like to read the data yourself, use any text editor to open the file, and observe something similar to this:
 
 ```txt
 # OpenSignals Text File Format. Version 1
