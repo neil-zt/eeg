@@ -189,7 +189,7 @@ When taking snapshots, you can specify the name of it. For example, the snapshot
 
 ### Tools 
 
-Additional tools have also been provided to facilitate the development process. These tools are written in Python and are located in the `/server/tools/` directory. Below are the instructions on how to use them. These instructions assume that we are already inside the tools directory with `cd server/tools`. Also note that depending on your Python configuration, the prefix command `python3` might by `python` or something else. 
+Additional tools have also been provided to facilitate the development process. These tools are written in Python and are located in the `/server/tools/` directory. Below are the instructions on how to use them. These instructions assume that we are already inside the tools directory with `cd server/tools`. Also note that depending on your Python configuration, the prefix command `python3` might be `python` or something else. 
 
 - **EDF to CSV** `edf_to_csv.py`
     This tool converts the EDF `.edf` EEG signal file into a `.csv` file. 
@@ -201,6 +201,12 @@ Additional tools have also been provided to facilitate the development process. 
     This tool converts the OpenSignals `.txt` EEG signal file into a `.csv` file. 
     ```sh
     python3 opensignals_to_csv.py <source-file-path> <destination-file-path>
+    ```
+
+- **Stream from Cyton Board for fixed time** `stream_fixed_time.py`
+    This tool streams signal data from the OpenBCI Cyton board for a fixed amount of time, and prints out the results. 
+    ```sh
+    python3 stream_fixed_time.py <serial-name> <time-in-seconds-float>
     ```
     
 
