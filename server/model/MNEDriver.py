@@ -73,20 +73,24 @@ class MNEDriver:
         raw_dict = {channel: list(data) for channel, data 
                     in zip(mne_driver.channels, mne_driver.channel_data_lists)}
         mne_driver.write_json("data.json", raw_dict)
-
-    @staticmethod
-    def plot_psd(mne_driver, *args, **kwargs):
-        psd_fig = mne_driver.mne_raw.plot_psd(*args, **kwargs)
-        if mne_driver.output_destination is not None:
-            psd_fig.savefig(mne_driver.get_path_name("psd.png"))
-        mne_driver.sequence += 1
-        return mne_driver
     
     @staticmethod
     def plot_data(mne_driver, *args, **kwargs):
         data_fig = mne_driver.mne_raw.plot(*args, **kwargs)
         if mne_driver.output_destination is not None:
             data_fig.savefig(mne_driver.get_path_name("data.png"))
+        mne_driver.sequence += 1
+        return mne_driver
+    
+    @staticmethod
+    def record_psd(mne_driver, *args, **kwargs):
+        raise NotImplementedError("This method is not yet implemented.")
+
+    @staticmethod
+    def plot_psd(mne_driver, *args, **kwargs):
+        psd_fig = mne_driver.mne_raw.plot_psd(*args, **kwargs)
+        if mne_driver.output_destination is not None:
+            psd_fig.savefig(mne_driver.get_path_name("psd.png"))
         mne_driver.sequence += 1
         return mne_driver
     
