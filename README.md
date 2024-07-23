@@ -219,6 +219,28 @@ Additional tools have also been provided to facilitate the development process. 
     - No two or more instances of the server are running.
     - The **Serial Monitor** panel in the Arduino IDE is closed.
 
+- **Unable to Prepare Cyton Session**
+    Sometimes the BrainFlow package module `BoardShim` would yield errors that say it is unable to connect to the board or prepare the session. In that case, try the following:
+    1. Check that the serial port name is correct. 
+    2. Check that the Cyton board power mode is set to "PC" if you are connecting it via the dongle. 
+    3. If things above look correct, simply remove the dongle and re=plug it, which usually solves the problem. 
+
+- **MNE not Plotting Full Duration**
+    If your data duration is too long (for example, if you set the frame to process data every 20 seconds), MNE might only plot a part of the data. To plot the full data, you can specify the keyword argument `duration` of `MNE.raw.plot` to be the plotting duration in seconds. In this module, this means that you should turn the original code: 
+    ```python
+    frame.wrap(pipeline=[
+        MNEDriver.plot_data, 
+        (MNEDriver.plot_data, {"scalings": 1e3}),
+    ])
+    ```
+    into this by supplying that argument: 
+    ```python
+    frame.wrap(pipeline=[
+        (MNEDriver.plot_data, {"duration": 20}), 
+        (MNEDriver.plot_data, {"scalings": 1e3, "duration": 20}),
+    ])
+    ```
+
 ### Searching for Serial Port Name
 
 You can view the port name in the Arduino IDE, or using the following methods:

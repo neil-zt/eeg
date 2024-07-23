@@ -67,7 +67,8 @@ class Frame:
             signal_serial=self.clock,
             montage="standard_1020",
         )
-        # Set the default kwargs
+        
+        print(mne_driver.mne_raw._data.shape)
 
         for processor in self.pipeline:
             if type(processor) is tuple:
