@@ -20,6 +20,7 @@ class Frame:
             window_size_samples: int,
             output_directory: str,
             montage: str = "standard_1020",
+            channel_types: list[str]|None = None
             ) -> None:
         
         self.sample_rate = sample_rate                      # Number of samples per second
@@ -31,8 +32,10 @@ class Frame:
         self.pipeline = []                                  # List of functions to process signals
         self.window_size_samples = window_size_samples      # Number of samples per window
         self.timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        self.output_directory = output_directory             # Directory to store results
+        self.output_directory = output_directory            # Directory to store results
         self.output_destination = os.path.join(self.output_directory, self.timestamp)
+        self.montage = montage
+        self.channel_types = channel_types
         os.makedirs(self.output_destination, exist_ok=True)
 
     def add_singal(self, signals: str) -> None:
@@ -42,10 +45,10 @@ class Frame:
         """
         signals =signals.strip(",")
         signals_list = signals.split(",")
-        if len(signals_list) != len(self.channels):
-            raise ValueError("The number of signals must match the number of channels.")
-        for i, signal in enumerate(signals_list):
-            self.channel_data[self.channels[i]].append(signal)
+        if len(signals_list) < len(self.channels):
+            raise ValueError("The number of signals must >= the number of channels.")
+        for i, _ in enumerate(self.channels):
+            self.channel_data[self.channels[i]].append(signals_list[i])
 
         if (self.clock + 1) % self.window_size_samples == 0:
             self.do_wrap()
@@ -62,10 +65,11 @@ class Frame:
         mne_driver = MNEDriver(
             sample_rate=self.sample_rate,
             channels=self.channels,
+            channel_types=self.channel_types,
             channel_data_lists=channel_lists,
             output_destination=self.output_destination,
             signal_serial=self.clock,
-            montage="standard_1020",
+            montage=self.montage,
         )
         
         print(mne_driver.mne_raw._data.shape)

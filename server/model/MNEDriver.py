@@ -1,5 +1,6 @@
 import numpy as np
 import mne, os, json
+from scipy.signal import savgol_filter as scipy_savgol
 # from mne.preprocessing import ICA
 
 class MNEDriver:
@@ -12,6 +13,7 @@ class MNEDriver:
             output_destination: str,
             signal_serial: int,
             montage: str = "standard_1020",
+            channel_types: list[str]|None = None,
             ) -> None:
         
         self.channel_data_lists = np.array(channel_data_lists).astype(float)
@@ -28,7 +30,7 @@ class MNEDriver:
         self.mne_info = mne.create_info(
             ch_names=self.channels,
             sfreq=self.sample_rate,
-            ch_types=["eeg"]*self.num_channels,
+            ch_types=channel_types if channel_types is not None else ["eeg"]*len(self.channels),
         )
         self.mne_raw = mne.io.RawArray(self.channel_data_lists, self.mne_info)
         self.signal_serial = signal_serial
@@ -108,6 +110,18 @@ class MNEDriver:
     
     @staticmethod
     def ica(mne_driver, *args, **kwargs):
-        
-        return mne_driver
+        raise NotImplementedError("This method is not yet implemented.")
+    
+    @staticmethod
+    def savgol_filter(mne_driver, *args, **kwargs):
+        filtered_data = np.empty_like(mne_driver.mne_raw._data)
+        for i in range(len(mne_driver.mne_raw.ch_names)):
+            filtered_data[i, :] = scipy_savgol(mne_driver.mne_raw._data[i, :], *args, **kwargs)
+            mne_driver.mne_raw._data[i, :] -= filtered_data[i, :]
 
+    @staticmethod
+    def moving_average_smoothening(mne_driver, *args, **kwargs):
+        window_size = kwargs.get("window", 5)
+        for i in range(len(mne_driver.mne_raw.ch_names)):
+            window = np.ones(window_size) / window_size
+            mne_driver.mne_raw._data[i, :] = np.convolve(mne_driver.mne_raw._data[i, :], window, 'same')
