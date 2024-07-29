@@ -2,6 +2,7 @@ from collections import deque
 from datetime import datetime
 import multiprocessing, os, json
 from model.MNEDriver import MNEDriver
+from model.Server import Server
 
 class Frame:
     """
@@ -20,7 +21,8 @@ class Frame:
             window_size_samples: int,
             output_directory: str,
             montage: str = "standard_1020",
-            channel_types: list[str]|None = None
+            channel_types: list[str]|None = None,
+            server: Server|None = None
             ) -> None:
         
         self.sample_rate = sample_rate                      # Number of samples per second
@@ -36,7 +38,10 @@ class Frame:
         self.output_destination = os.path.join(self.output_directory, self.timestamp)
         self.montage = montage
         self.channel_types = channel_types
+        self.server = server
         os.makedirs(self.output_destination, exist_ok=True)
+        if self.server is not None:
+            self.server.inject_output_destination_name(self.output_destination)
 
     def add_singal(self, signals: str) -> None:
         """

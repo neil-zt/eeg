@@ -5,6 +5,7 @@ from model.Server import Server
 
 
 if __name__ == '__main__':
+    server = Server(host="0.0.0.0", port=8000)
 
     frame = Frame(
         channels=["Fp1"],                                       # The MNE package work with EEG better, so pretend that 
@@ -12,7 +13,8 @@ if __name__ == '__main__':
         sample_rate=250,                                        # one of these channels represent our ECG data.
         max_cache_samples=2500,
         window_size_samples=2500,
-        output_directory="./server/results",)
+        output_directory="./server/results",
+        server=server, )
     
     frame.wrap(pipeline=[          
         MNEDriver.record_data,
@@ -41,7 +43,13 @@ if __name__ == '__main__':
     stream.start()
 
     # Running the FastAPI server
-    server = Server(host="0.0.0.0", port=8000)
     server.run()
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("Shutting down the server")
+        server.stop()
 
 
