@@ -3,6 +3,7 @@ from datetime import datetime
 import multiprocessing, os, json
 from model.MNEDriver import MNEDriver
 from model.Server import Server
+from datetime import datetime
 
 class Frame:
     """
@@ -38,10 +39,11 @@ class Frame:
         self.output_destination = os.path.join(self.output_directory, self.timestamp)
         self.montage = montage
         self.channel_types = channel_types
-        self.server = server
+        self.last_window_begin_time = None
+
         os.makedirs(self.output_destination, exist_ok=True)
-        if self.server is not None:
-            self.server.inject_output_destination_name(self.output_destination)
+        if server is not None:
+            server.inject_output_destination_name(self.output_destination)
 
     def add_singal(self, signals: str) -> None:
         """
@@ -55,8 +57,12 @@ class Frame:
         for i, _ in enumerate(self.channels):
             self.channel_data[self.channels[i]].append(signals_list[i])
 
+        if self.clock % self.window_size_samples == 0:
+            current_time = str(datetime.now().time())
+            self.last_window_begin_time = current_time
+
         if (self.clock + 1) % self.window_size_samples == 0:
-            self.do_wrap()
+            self.do_wrap(window_begin_time=str(self.last_window_begin_time))        # Force string copying
         self.clock += 1
 
     def wrap(self, pipeline: list[callable]) -> None:
@@ -66,7 +72,7 @@ class Frame:
         """
         self.pipeline = pipeline
 
-    def _process_wrap_pipeline(self, channel_lists) -> None:
+    def _process_wrap_pipeline(self, channel_lists, window_begin_time:str|None = None) -> None:
         mne_driver = MNEDriver(
             sample_rate=self.sample_rate,
             channels=self.channels,
@@ -75,11 +81,11 @@ class Frame:
             output_destination=self.output_destination,
             signal_serial=self.clock,
             montage=self.montage,
+            window_begin_time=window_begin_time
         )
-        
-        print(mne_driver.mne_raw._data.shape)
 
         for processor in self.pipeline:
+            # print(window_begin_time)
             if type(processor) is tuple:
                 if processor[1].get("cascade_output", False):
                     processor[1]["output_destination"] = self.output_destination
@@ -88,7 +94,7 @@ class Frame:
             else:
                 processor(mne_driver)
         
-    def do_wrap(self) -> None:
+    def do_wrap(self, window_begin_time:str|None = None) -> None:
         """
         Perform the processing of the signal values, as defined by Frame.wrap(pipeline).
         This function will now spawn a new process and run the pipeline in that process,
@@ -100,7 +106,7 @@ class Frame:
         # Create a new process targeting the process_pipeline method
         process = multiprocessing.Process(
             target=self._process_wrap_pipeline,
-            args=(channel_lists,))
+            args=(channel_lists, window_begin_time))
         process.start()     # Start the process
         # process.join()    # Shouldn't need this for now
 

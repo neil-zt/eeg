@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEG Software Visualizer @ K100</title>
+    <link rel="stylesheet" href="visualize.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="glassmorphic">
+        EEG Software Visualizer @ K100
+    </nav>
+    <div class="content">
+        <div class="toolbar">
+            <div class="logo">
+
+            </div>
+            <div>
+                <input 
+                    placeholder="Displayed Image Name" 
+                    id="displayed-image-name" 
+                />
+            </div>
+            <div>
+                <input 
+                    placeholder="Refreshing Time" 
+                    id="refreshing-time" 
+                />
+            </div>
+            <div>
+                <button onclick="startStreaming();">
+                    Start Streaming
+                </button>
+            </div>
+        </div>
+        <div class="image-display">
+            <div class="progress-bar" style="margin-bottom: 10px;">
+                <div class="progress-bar-inner" id="main-prog-inner"></div>
+            </div>
+
+            <div class="image" id="image">
+
+            </div>
+        </div>
+    </div>
+</body>
+<script src="jquery.js"></script>
+<script>
+    let sessionStarted = false;
+    let progBarShallReset = false;
+    let progBarResetTime = 10;
+    let currentProgBarPercentage = 0;
+
+    function writeCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function readCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+
+    function startStreaming() {
+        const displayedImageName = document.getElementById("displayed-image-name").value;
+        const refreshingTime = document.getElementById("refreshing-time").value;
+        localStorage.setItem('displayedImageName', displayedImageName);
+        localStorage.setItem('refreshingTime', refreshingTime);
+
+        sessionStarted = true;
+        progBarResetTime = parseFloat(refreshingTime);
+
+        fetchLatestData(displayedImageName);
+    }
+    
+    function fetchLatestData(displayedImageName) {
+        fetch('http://localhost:8000/latest')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.empty && data.images?.[displayedImageName]) {
+                    progBarShallReset = true;
+                    document.getElementById("image").style.backgroundImage 
+                        = `url(data:image/png;base64,${data.images[displayedImageName]})`;
+                }
+                setTimeout(() => fetchLatestData(displayedImageName), 1000);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                setTimeout(() => fetchLatestData(displayedImageName), 1000);
+            });
+    }
+
+    window.onload = () => {
+        document.getElementById("displayed-image-name").value = localStorage.getItem('displayedImageName');
+        document.getElementById("refreshing-time").value = localStorage.getItem('refreshingTime');
+
+        const progressBarInner = document.getElementById("main-prog-inner")
+
+        setInterval(() => {
+            if (!sessionStarted) {
+                progressBarInner.style.width = `0%`;
+                return;
+            }
+            if (progBarShallReset) {
+                currentProgBarPercentage = 0;
+                progBarShallReset = false;
+            }
+            currentProgBarPercentage += 100 * (100 / 1000) / progBarResetTime;
+            progressBarInner.style.width = `${currentProgBarPercentage}%`;
+        }, 100)
+    };
+
+</script>
+</html>

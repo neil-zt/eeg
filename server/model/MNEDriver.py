@@ -14,6 +14,7 @@ class MNEDriver:
             signal_serial: int,
             montage: str = "standard_1020",
             channel_types: list[str]|None = None,
+            window_begin_time:str|None = None,
             ) -> None:
         
         self.channel_data_lists = np.array(channel_data_lists).astype(float)
@@ -38,6 +39,7 @@ class MNEDriver:
         self.montage = montage
         self.mne_raw.set_montage(mne.channels.make_standard_montage(self.montage))
         self.sequence = 0
+        self.window_begin_time = window_begin_time
 
     def re_init(self, channel_data_lists: list[list[float]]):
         """
@@ -74,7 +76,9 @@ class MNEDriver:
     def record_data(mne_driver, *args, **kwargs):
         raw_dict = {channel: list(data) for channel, data 
                     in zip(mne_driver.channels, mne_driver.channel_data_lists)}
+        raw_dict["window_begin_time"] = mne_driver.window_begin_time
         mne_driver.write_json("data.json", raw_dict)
+        mne_driver.sequence += 1
     
     @staticmethod
     def plot_data(mne_driver, *args, **kwargs):
