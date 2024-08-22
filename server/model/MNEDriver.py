@@ -1,6 +1,7 @@
 import numpy as np
 import mne, os, json
 from scipy.signal import savgol_filter as scipy_savgol
+import matplotlib.pyplot as plt
 # from mne.preprocessing import ICA
 
 class MNEDriver:
@@ -40,6 +41,8 @@ class MNEDriver:
         self.mne_raw.set_montage(mne.channels.make_standard_montage(self.montage))
         self.sequence = 0
         self.window_begin_time = window_begin_time
+        self.evoked = None
+
 
     def re_init(self, channel_data_lists: list[list[float]]):
         """
@@ -94,12 +97,50 @@ class MNEDriver:
 
     @staticmethod
     def plot_psd(mne_driver, *args, **kwargs):
-        psd_fig = mne_driver.mne_raw.plot_psd(*args, **kwargs)
+        psd_fig = mne_driver.mne_raw.compute_psd().plot(*args, **kwargs)
         if mne_driver.output_destination is not None:
             psd_fig.savefig(mne_driver.get_path_name("psd.png"))
         mne_driver.sequence += 1
         return mne_driver
+
+    @staticmethod
+    def plot_psds_topomap(mne_driver, *args, **kwargs):
+        plt.ion()
+        topomap_fig = mne_driver.mne_raw.compute_psd().plot_topomap(*args, **kwargs)   
+        if mne_driver.output_destination is not None:
+            topomap_fig.savefig(mne_driver.get_path_name("psds-topomap.png"))
+        mne_driver.sequence += 1
+        return mne_driver
     
+    @staticmethod
+    def plot_evoked(mne_driver, *args, **kwargs):
+        plt.ion()
+        if mne_driver.evoked is None:
+            MNEDriver.build_evoked(mne_driver)
+        evoked_fig = mne_driver.evoked.plot(*args, **kwargs)
+        if mne_driver.output_destination is not None:
+            evoked_fig.savefig(mne_driver.get_path_name("evoked.png"))
+        mne_driver.sequence += 1
+        return mne_driver
+    
+    @staticmethod
+    def plot_topomap(mne_driver, *args, **kwargs):
+        plt.ion()
+        if mne_driver.evoked is None:
+            MNEDriver.build_evoked(mne_driver)
+        topomap_fig = mne_driver.evoked.plot_topomap(*args, **kwargs)
+        if mne_driver.output_destination is not None:
+            topomap_fig.savefig(mne_driver.get_path_name("topomap.png"))
+        mne_driver.sequence += 1
+        return mne_driver
+    
+    @staticmethod
+    def build_evoked(mne_driver):
+        data, _ = mne_driver.mne_raw[:]
+        tmin = 0.0
+        evoked = mne.EvokedArray(data, mne_driver.mne_raw.info, tmin=tmin)
+        mne_driver.evoked = evoked
+
     @staticmethod
     def filter(mne_driver, *args, **kwargs):
         mne_driver.mne_raw.filter(*args, **kwargs)
@@ -129,3 +170,4 @@ class MNEDriver:
         for i in range(len(mne_driver.mne_raw.ch_names)):
             window = np.ones(window_size) / window_size
             mne_driver.mne_raw._data[i, :] = np.convolve(mne_driver.mne_raw._data[i, :], window, 'same')
+    

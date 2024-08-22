@@ -18,9 +18,13 @@ if __name__ == '__main__':
         # MNEDriver.record_data,
         (MNEDriver.plot_data, {"scalings": 30}),
         MNEDriver.plot_psd,
-        (MNEDriver.filter, {"l_freq": 15, "h_freq": 45}),
-        (MNEDriver.plot_data, {"scalings": 30}),
+        (MNEDriver.filter, {"l_freq": 1.5, "h_freq": 80}),
         MNEDriver.plot_psd,
+        (MNEDriver.plot_data, {"scalings": 30}),
+        (MNEDriver.plot_psds_topomap, {"bands": {
+            'Alpha (7.5-12 Hz)': (7.5, 12), 'Beta (12-30 Hz)': (12, 30), 'Gamma (30-45 Hz)': (30, 45)  }, }),
+        MNEDriver.plot_evoked,
+        MNEDriver.plot_topomap,
     ])
 
     stream = Stream(
@@ -30,7 +34,6 @@ if __name__ == '__main__':
         drop_first=1,
     )
     stream.onload(pipeline=[
-        print, 
         frame.add_singal,])
     stream.start()
 

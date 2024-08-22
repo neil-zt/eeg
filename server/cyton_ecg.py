@@ -31,17 +31,17 @@ if __name__ == '__main__':
     
     frame.wrap(pipeline=[          
         MNEDriver.record_data,
-        (MNEDriver.plot_data, {"scalings":1e3}),                # Adjust the scaling as needed
+        (MNEDriver.plot_data, {"scalings":2e3}),                # Adjust the scaling as needed
         MNEDriver.plot_psd,
         (MNEDriver.notch_filter, {"freqs": [60, 120]}),
         (MNEDriver.filter, {"l_freq": 0.5, "h_freq": 35}),      # Cutoff for HPF for ECG is usually set at 0.5 Hz.
-        (MNEDriver.plot_data, {"scalings":1e3}),
+        (MNEDriver.plot_data, {"scalings":2e3}),
         MNEDriver.plot_psd,
         (MNEDriver.savgol_filter, {"window_length": 51, "polyorder": 3}),
-        (MNEDriver.plot_data, {"scalings":1e3}),
+        (MNEDriver.plot_data, {"scalings":2e3}),
         MNEDriver.plot_psd,
         MNEDriver.moving_average_smoothening,
-        (MNEDriver.plot_data, {"scalings":1e3}),
+        (MNEDriver.plot_data, {"scalings":2e3}),
         MNEDriver.plot_psd,
         MNEDriver.record_data,
     ])
