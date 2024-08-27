@@ -148,7 +148,8 @@ You can change the source of the stream by simply changing what is passed into t
 ```python
 stream = Stream(
     serial_port='COM5',
-    board_type='Cyton', )
+    board_type='Cyton', 
+    read_pause=1, )
 ```
 
 ### Reading from Static Files 
@@ -158,7 +159,7 @@ If you wish to read in a static file instead of streaming realtime data, then, `
 ```python
 stream = Stream(
     file_name="./server/sample_data/eeg-alpha-waves/subject_11.csv",
-    read_pause=0.00,
+    read_pause=0.01,
     drop_last=2,
     drop_first=1, )
 ```
@@ -231,6 +232,73 @@ Additional tools have also been provided to facilitate the development process. 
     python3 stream_fixed_time.py <serial-name> <time-in-seconds-float>
     ```
     
+
+## Common Class Methods Documentation
+
+### The `Stream` Class
+
+This class helps read in signals from different sources, and is the medium between data source and the `Frame` class. Current implementations allow the streaming of data from (1) Arduino (Self-defined serial connection), (2) OpenBCI Cyton, and (3) static files. 
+
+- **The `__init__` constructor**
+    Function signature: 
+    ```python
+        def __init__(
+            self, 
+            serial_port: int|None = None, 
+            baud_rate: int|None = None,
+            file_name: str|None = None,
+            read_pause: float = 0.005,
+            drop_last: int = 0,
+            drop_first: int = 0,
+            drop_header_rows: int = 0,
+            board_type: str|None = None,
+            ) -> None
+    ```
+    Parameters:
+    | Parameter | Explanations | 
+    | --- | --- | 
+    | `serial_port` | The serial port from which data is streamed | 
+    | `baud_rate` | The BAUD rate of the serial connection | 
+    | `file_name` | The name of the file that is read | 
+    | `read_pause` | The pause length between reading two signals | 
+    | `drop_last` | The number of last columns ignored when reading from a CSV |
+    | `drop_first` | The number of first columns ignored when reading from a CSV |
+    | `drop_header_rows` | The number of rows ignored when reading from a CSV | 
+    | `board_type` | The type of the board from which data is streamed | 
+    Usage:
+    - Streaming from Arduino
+        ```python
+            stream = Stream(
+                serial_port='/dev/tty.usbserial-2110',
+                baud_rate=9600, )
+        ```
+        In this case, the data format streamed should follow what is described [here](#streaming-from-arduino).
+    - Streaming from Cyton
+        ```python
+            stream = Stream(
+                serial_port='COM5',
+                board_type='Cyton', )
+        ```
+    - Reading Static Files
+        ```python
+            stream = Stream(
+                file_name="./server/sample_data/eeg-alpha-waves/subject_11.csv",
+                read_pause=0.00,
+                drop_last=2,
+                drop_first=1, )
+        ```
+
+
+### The `Frame` Class 
+
+### The `Server` Class
+
+### The `MNEDriver` Class
+
+### The `Metrics` Class 
+
+### The `Noise` Class 
+
 
 ## Appendix
 
