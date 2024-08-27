@@ -240,6 +240,9 @@ Additional tools have also been provided to facilitate the development process. 
 This class helps read in signals from different sources, and is the medium between data source and the `Frame` class. Current implementations allow the streaming of data from (1) Arduino (Self-defined serial connection), (2) OpenBCI Cyton, and (3) static files. 
 
 - **The `__init__` constructor**
+
+    This method constructs a `Stream` instance.
+
     Function signature: 
     ```python
         def __init__(
@@ -254,6 +257,7 @@ This class helps read in signals from different sources, and is the medium betwe
             board_type: str|None = None,
             ) -> None
     ```
+
     Parameters:
     | Parameter | Explanations | 
     | --- | --- | 
@@ -265,6 +269,7 @@ This class helps read in signals from different sources, and is the medium betwe
     | `drop_first` | The number of first columns ignored when reading from a CSV |
     | `drop_header_rows` | The number of rows ignored when reading from a CSV | 
     | `board_type` | The type of the board from which data is streamed | 
+
     Usage:
     - Streaming from Arduino
         ```python
@@ -287,6 +292,36 @@ This class helps read in signals from different sources, and is the medium betwe
                 drop_last=2,
                 drop_first=1, )
         ```
+
+- **The `onload` method**
+
+    This method defines what shall be called each time a new signal is received. 
+
+    Function Signature:
+    ```python
+        def onload(self, pipeline: list[callable]) -> None
+    ```
+
+    Parameters:
+    | Parameter | Explanations | 
+    | --- | --- | 
+    | `pipeline` | A list of callables (e.g., functions, lambdas, etc.) that shall be called each time a new signal is received | 
+
+    Usage:
+    - Printing out the signal value, and then adding it to the `frame` object
+    ```python
+        stream.onload(pipeline=[ print, frame.add_singal ])
+    ```
+
+
+- **The `start` method**
+
+    This method starts the stream. 
+
+    Function Signature:
+    ```python
+        def start(self)
+    ```
 
 
 ### The `Frame` Class 
