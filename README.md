@@ -326,6 +326,77 @@ This class helps read in signals from different sources, and is the medium betwe
 
 ### The `Frame` Class 
 
+- **The `__init__` constructor**
+
+    This method constructs a `Frame` instance.
+
+    Function Signature:
+
+    ```python
+        def __init__(
+            self, 
+            channels: str,
+            sample_rate: int, 
+            max_cache_samples: int,
+            window_size_samples: int,
+            output_directory: str,
+            montage: str = "standard_1020",
+            channel_types: list[str]|None = None,
+            server: Server|None = None
+            ) -> None:
+    ```
+
+- **The `add_signal` method**
+
+    This method adds a signal to the data structure of the frame. This is configured to work with `Stream.onload`.
+
+    Function Signature:
+
+    ```python
+        def add_singal(self, signals: str) -> None
+    ```
+
+    Parameters:
+    | Parameter | Explanations | 
+    | --- | --- | 
+    | `signals` | A string containing the signals, of floats separated by commas |
+
+- **The `wrap` method**
+
+    This method defines what should be run on the data every `window_size_samples` signals. 
+
+    Function Signature:
+
+    ```python
+    def  wrap(self, pipeline: list[callable]) -> None
+    ```
+
+    Parameters:
+    | Parameter | Explanations | 
+    | --- | --- | 
+    | `pipeline` | A list of callables (e.g., functions, lambdas, etc.) that shall be called each time a new window is completed. | 
+
+    Usage:
+    ```python
+        frame.wrap(pipeline=[          
+            MNEDriver.record_data,
+            (MNEDriver.plot_data, {"scalings":2e3}), 
+            MNEDriver.plot_psd,
+            (MNEDriver.notch_filter, {"freqs": [60, 120]}),
+            (MNEDriver.filter, {"l_freq": 0.5, "h_freq": 35}), 
+            (MNEDriver.plot_data, {"scalings":2e3}),
+            MNEDriver.plot_psd,
+            (MNEDriver.savgol_filter, {"window_length": 51, "polyorder": 3}),
+            (MNEDriver.plot_data, {"scalings":2e3}),
+            MNEDriver.plot_psd,
+            MNEDriver.moving_average_smoothening,
+            (MNEDriver.plot_data, {"scalings":2e3}),
+            MNEDriver.plot_psd,
+            MNEDriver.record_data,
+        ])
+    ```
+
+
 ### The `Server` Class
 
 ### The `MNEDriver` Class
