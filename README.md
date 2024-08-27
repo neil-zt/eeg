@@ -83,6 +83,16 @@ If there are header rows, header columns, or tailing columns, you can drop them 
 
 ## Usage 
 
+### Demo Files 
+
+There are multiple files already drafted that are ready to be used, at the root of this repository. The coming sections explain how these files utilize the underlying package. These working files are:
+
+- `realtime.py`
+- `static.py`
+- `noise.py`
+- `cyton_ecg.py`
+- `cyton_eeg.py`
+
 ### Streaming from Arduino 
 
 The example script for streaming from Arduino can be found in `/server/realtime.py`. Below is a walkthrough of the configurations used there. First, we create a `Frame` object that is supposed to hold signals from multiple channels. Particularly note that `window_size_samples` defines how many datapoints shall be packed into a single window and analyzed together.  
@@ -130,9 +140,20 @@ server = Server(host="0.0.0.0", port=8000)
 server.run()
 ```
 
+
+### Streaming from OpenBCI Cyton
+
+You can change the source of the stream by simply changing what is passed into the constructor of `Stream`, as inside `cyton_eeg.py` and `cyton_ecg.py`. To read from OpenBCI Cyton, first ensure that everything is turned on and configured correctly on the hardware, and then use the following configuration for `Stream`: 
+
+```python
+stream = Stream(
+    serial_port='COM5',
+    board_type='Cyton', )
+```
+
 ### Reading from Static Files 
 
-If you wish to read in a static file instead of streaming realtime data, the only item that has to be changed is how we define the `Stream` instance. Other details remain the same as in the case of straming from Arduino. 
+If you wish to read in a static file instead of streaming realtime data, then, `Stream` can be configured as the following:
 
 ```python
 stream = Stream(
@@ -143,6 +164,7 @@ stream = Stream(
 ```
 
 Here, the parameter `read_pause` is the time paused between reading in two consecutive signals. This parameter exists for scenarios where we want to simulate real time data, but from a static, fixed file. Additionally, `drop_last` and `drop_first` allow us to disregard the first or last columns of a `.csv` file. To read from `.edf` or `.txt` files, convert them to `.csv` files using the tools provided in the `/server/tools/` directory, with documentations provided in the [Tools](#tools) section below.
+
 
 ### Generating Noise and Using Metrics
 
