@@ -1,11 +1,19 @@
 # EEG Software 
 
-The EEG Software repository contains everything (so far) that is needed to (1) Record signals through our Arduino-compatible development board, and (2) Dynamically stream EEG signals either from an Arduino serial connection or a static file, and analyze and visualize the data accordingly. Code for these two objectives are separated into two root-level directories: 
+The EEG Software repository contains everything (so far) that is needed to (1) Record signals through our Arduino-compatible development board, (2) Dynamically stream EEG signals either from an Arduino serial connection or a static file while performing analysis in real time, and (3) Visualize the data from a web-based portal. Code for these two objectives are separated into two root-level directories: 
 
 - (1) [Arduino Code](/board/)
 - (2) [Python DSP Code](/server/)
+- (3) [Web-Based Visualizer Code](/portal/)
 
-The Arduino code is self-explanatory and will not be elaborated in this document. The below documentation explains how the Python directory shall be used or set up. 
+The Arduino code is self-explanatory and will not be elaborated in this document. The below documentation explains how the Python directory shall be used or set up, and how the web-based vosualizer can be used. 
+
+> **Note** that before you start modifying the code, you might want to first learn about some background knowledge about both EEG and how Python works. 
+> - For information about EEG and OpenBCI Cyton, please read **EEG專案報告** by Neil.
+> - Many Python syntaxes that require more advanced understanding of the language are used inside this project. Please understand the below first:
+>   - Passing callables as arguments: [**Tutorial**](https://www.tutorialspoint.com/how-to-pass-python-function-as-a-function-argument)
+>   - Multiprocessing and multithreading in Python: [**Tutorial**](https://youtu.be/AZnGRKFUU0c)
+>   - Using keyword-arguments: [**Tutorial**](https://youtu.be/4jBJhCaNrWU)
 
 ## Setup and Configuration 
 
@@ -376,7 +384,7 @@ This class is the main data structure holding the signals. It automatically proc
     Parameters:
     | Parameter | Explanations | 
     | --- | --- | 
-    | `pipeline` | A list of callables (e.g., functions, lambdas, etc.) that shall be called each time a new window is completed. | 
+    | `pipeline` | A list of callables (e.g., functions, lambdas, etc.) that shall be called each time a new window is completed. If instead of callables, tuples are also inside the list, then the first item of that tuple shall be a callable, while the second item shall be a dictionary that is the keyword-arguments of the callable. | 
 
     Usage:
     ```python
@@ -431,6 +439,10 @@ This class shall be used as the main server of the program, which servers conten
     ```
 
 ### The `MNEDriver` Class
+
+This class wraps around MNE-Python so that it performs realtime analysis better. Each instance of the `MNEDriver` contains data in MNE-Python's native raw format. In addition, a series of static methods are provided as ways of modifying the instance data.
+
+
 
 ### The `Metrics` Class 
 
