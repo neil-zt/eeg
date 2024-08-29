@@ -239,6 +239,10 @@ Additional tools have also been provided to facilitate the development process. 
     ```sh
     python3 stream_fixed_time.py <serial-name> <time-in-seconds-float>
     ```
+
+### Visualization Tools 
+
+To visualize the outputted graphs, simly make sure that the server is running, and then open `/portal/visualize.html` to start visualizing.
     
 
 ## Common Class Methods Documentation
