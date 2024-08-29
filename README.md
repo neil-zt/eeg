@@ -428,6 +428,11 @@ This class shall be used as the main server of the program, which servers conten
     | `port` | The port through which requests should be listened and served back |
     | `num_files` | The number of files produced in each batch of process. This should be the number of files produced in each pipeline of `Frame` | 
 
+    Usage:
+    ```python
+        server = Server(host="0.0.0.0", port=8000)
+    ```
+
 - **The `run` method**
 
     This method runs the server.
@@ -438,11 +443,27 @@ This class shall be used as the main server of the program, which servers conten
         def run(self)
     ```
 
+    Usage:
+    ```python
+        server.run()
+    ```
+
 ### The `MNEDriver` Class
 
-This class wraps around MNE-Python so that it performs realtime analysis better. Each instance of the `MNEDriver` contains data in MNE-Python's native raw format. In addition, a series of static methods are provided as ways of modifying the instance data.
+This class wraps around MNE-Python so that it performs realtime analysis better. Each instance of the `MNEDriver` contains data in MNE-Python's native raw format. In addition, a series of static methods are provided as ways of modifying the instance data. Direct use of this class is written inside `Frame` and thus will not be explained here; instead, below is a list of the static methods that perform analyses on the data.
 
-
+| Static Method | Explanations | Underlying MNE-Python Method | 
+| --- | --- | --- |
+| `record_data` | Record the current data in JSON format | N/A |
+| `plot_data` | Plot the current data | [`MNE.io.Raw.plot()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.plot) |
+| `plot_psd` | Plot the power spectral density | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot()](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot) |
+| `plot_psds_topomap` | Plot the different frequency bands and their locations on the skull | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot_topomap()](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot_topomap) |
+| `plot_evoked` | Using time t=0 as the starting point, plot the evoked data |  |
+| `plot_topomap` | Plot the signal strengths at specified times, mapped to their locations on the skull |  |
+| `filter` | Apply a low-pass, high-pass, or band pass filter to the data |  |
+| `notch_filter` | Apply a notch filter to the data |  |
+| `savgol_filter` | Remove baseline drifting; do so by calculating the signal after savgol filter, and then subtracting that filtered signal from the data |  |
+| `moving_average_smoothening` | Smoothens the curves |  |
 
 ### The `Metrics` Class 
 
