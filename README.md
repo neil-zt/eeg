@@ -456,14 +456,14 @@ This class wraps around MNE-Python so that it performs realtime analysis better.
 | --- | --- | --- |
 | `record_data` | Record the current data in JSON format | N/A |
 | `plot_data` | Plot the current data | [`MNE.io.Raw.plot()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.plot) |
-| `plot_psd` | Plot the power spectral density | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot()](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot) |
-| `plot_psds_topomap` | Plot the different frequency bands and their locations on the skull | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot_topomap()](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot_topomap) |
-| `plot_evoked` | Using time t=0 as the starting point, plot the evoked data |  |
-| `plot_topomap` | Plot the signal strengths at specified times, mapped to their locations on the skull |  |
-| `filter` | Apply a low-pass, high-pass, or band pass filter to the data |  |
-| `notch_filter` | Apply a notch filter to the data |  |
-| `savgol_filter` | Remove baseline drifting; do so by calculating the signal after savgol filter, and then subtracting that filtered signal from the data |  |
-| `moving_average_smoothening` | Smoothens the curves |  |
+| `plot_psd` | Plot the power spectral density | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot()`](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot) |
+| `plot_psds_topomap` | Plot the different frequency bands and their locations on the skull | [`MNE.io.Raw.compute_psd()`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.compute_psd) and then [`MNE.time_frequency.Spectrum.plot_topomap()`](https://mne.tools/stable/generated/mne.time_frequency.Spectrum.html#mne.time_frequency.Spectrum.plot_topomap) |
+| `plot_evoked` | Using time t=0 as the starting point, plot the evoked data | [`MNE.Evoked.plot()`](https://mne.tools/stable/generated/mne.Evoked.html#mne.Evoked.plot) |
+| `plot_topomap` | Plot the signal strengths at specified times, mapped to their locations on the skull | [`MNE.Evoked.plot_topomap()`](https://mne.tools/stable/generated/mne.Evoked.html#mne.Evoked.plot_topomap) |
+| `filter` | Apply a low-pass, high-pass, or band pass filter to the data | [`MNE.io.Raw.filter`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.filter) |
+| `notch_filter` | Apply a notch filter to the data |[`MNE.io.Raw.notch_filter`](https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.notch_filter) |
+| `savgol_filter` | Remove baseline drifting; do so by calculating the signal after savgol filter, and then subtracting that filtered signal from the data | N/A |
+| `moving_average_smoothening` | Smoothens the curves | N/A |
 
 ### The `Metrics` Class 
 
