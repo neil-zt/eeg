@@ -326,6 +326,8 @@ This class helps read in signals from different sources, and is the medium betwe
 
 ### The `Frame` Class 
 
+This class is the main data structure holding the signals. It automatically processes the signals every time `window_size_samples` is reached, at which time the current data are all processed based on the pipeline.
+
 - **The `__init__` constructor**
 
     This method constructs a `Frame` instance.
@@ -398,6 +400,35 @@ This class helps read in signals from different sources, and is the medium betwe
 
 
 ### The `Server` Class
+
+This class shall be used as the main server of the program, which servers contents to the front-end portal, and keeps the program running. 
+
+- **The `__init__` constructor**
+
+    This method constructs a `Frame` instance.
+
+    Function Signature:
+
+    ```python
+        def __init__(self, host: str, port: int, num_files: int = 1) -> None
+    ```
+
+    Parameters:
+    | Parameter | Explanations | 
+    | --- | --- | 
+    | `host` | A string that contains the address, or ip address, of the base serving endpoint |
+    | `port` | The port through which requests should be listened and served back |
+    | `num_files` | The number of files produced in each batch of process. This should be the number of files produced in each pipeline of `Frame` | 
+
+- **The `run` method**
+
+    This method runs the server.
+
+    Function Signature:
+    
+    ```python
+        def run(self)
+    ```
 
 ### The `MNEDriver` Class
 
