@@ -465,11 +465,6 @@ This class wraps around MNE-Python so that it performs realtime analysis better.
 | `savgol_filter` | Remove baseline drifting; do so by calculating the signal after savgol filter, and then subtracting that filtered signal from the data | N/A |
 | `moving_average_smoothening` | Smoothens the curves | N/A |
 
-### The `Metrics` Class 
-
-### The `Noise` Class 
-
-
 ## Appendix
 
 ### Common Errors 
