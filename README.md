@@ -9,7 +9,6 @@ The EEG Software repository contains everything (so far) that is needed to (1) R
 The Arduino code is self-explanatory and will not be elaborated in this document. The below documentation explains how the Python directory shall be used or set up, and how the web-based vosualizer can be used. 
 
 > **Note** that before you start modifying the code, you might want to first learn about some background knowledge about both EEG and how Python works. 
-> - For information about EEG and OpenBCI Cyton, please read **EEG專案報告** by Neil.
 > - Many Python syntaxes that require more advanced understanding of the language are used inside this project. Please understand the below first:
 >   - Passing callables as arguments: [**Tutorial**](https://www.tutorialspoint.com/how-to-pass-python-function-as-a-function-argument)
 >   - Multiprocessing and multithreading in Python: [**Tutorial**](https://youtu.be/AZnGRKFUU0c)
